@@ -57,7 +57,47 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               child: Row(
                 children: [
-                  
+                  Expanded(child: TextField(
+                    decoration: InputDecoration(
+                      hintText: "Search Movies...",
+                      border: InputBorder.none,
+                    ),
+                  ),),
+                  Visibility(
+                    visible: _searchController.text.isNotEmpty,
+                    child: IconButton(
+                      onPressed: (){
+                        _searchController.clear();
+                        setState(() {
+                          _searchResults.clear();
+                        });
+                      },
+                      icon: Icon(Icons.clear),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Expanded(
+                      child: ListView.builder(
+                        itemCount: _searchResults.length,
+                          itemBuilder: (context,index){
+                          final Movie movie = _searchResults[index];
+                          return Padding(
+                              padding: EdgeInsets.symmetric(vertical: 4),
+                            child: ListTile(
+                              leading: Image.network('https://image.tmdb.org/t/p/w500${movie.posterPath}',
+                              height: 50,
+                                width: 50,
+                                fit: BoxFit.cover,
+                              ),
+                              title: Text(movie.title),
+                              onTap: (){},
+                            ),
+                          );
+                          },
+                      ),
+                  ),
                 ],
               ),
             ),
