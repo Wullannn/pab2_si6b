@@ -61,7 +61,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBYq_ZUyrtaZasc6FMrWXoVW604ka0FqzE',
-    appId: '1:422454988794:android:5d02ed0170e82f14f39e43',
+    appId: '1:422454988794:android:00fbe71bb429cfebf39e43',
     messagingSenderId: '422454988794',
     projectId: 'fasum-bdb12',
     storageBucket: 'fasum-bdb12.firebasestorage.app',
