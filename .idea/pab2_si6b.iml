@@ -9,6 +9,9 @@
       <excludeFolder url="file://$MODULE_DIR$/Daftar_Belanja/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/Daftar_Belanja/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/Daftar_Belanja/build" />
+      <excludeFolder url="file://$MODULE_DIR$/fasum/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/fasum/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/fasum/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
