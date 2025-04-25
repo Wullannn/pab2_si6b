@@ -1,9 +1,9 @@
+import 'package:fasum/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:fasum_ai/screens/home_screen.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'home_screen.dart';
+
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
   @override
@@ -136,7 +136,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                     child: const Text('Sign Up'),
                   ),
                 ],
-              ), 
+              ),
             ),
           ),
         ),
