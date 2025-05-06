@@ -1,17 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
-// import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+
 // import 'package:firebase_auth/firebase_auth.dart'
 class AddPostScreen extends StatefulWidget {
   const AddPostScreen({super.key});
   @override
-  State<AddPostScreen> createState() => _AddPostScreen1State();
+  State<AddPostScreen> createState() => _AddPostScreenState();
 }
-class _AddPostScreen1State extends State<AddPostScreen> {
+class _AddPostScreen1State extends State<AddPostScreen1> {
   File? _image;
   String? _base64Image;
   final TextEditingController _descriptionController =
@@ -34,7 +36,7 @@ class _AddPostScreen1State extends State<AddPostScreen> {
           _descriptionController.clear();
         });
         await _compressAndEncodeImage();
-// await _generateDescriptionWithAI();
+        // await _generateDescriptionWithAI();
       }
     } catch (e) {
       if (mounted) {
@@ -44,15 +46,83 @@ class _AddPostScreen1State extends State<AddPostScreen> {
       }
     }
   }
-  Future<void>_getLocation() async {
-    bool serviceEnable;
+  Future<void> _getlocation() async{
+    bool serviceEnabled;
     LocationPermission permission;
-    serviceEnable = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnable){
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if(!serviceEnabled){
       throw Exception('Location services are disabled');
     }
-    permission = (await Geolocator) as LocationPermission, checkPermission();
-    if(permission == LocationPermission.denied);
+
+    permission = await Geolocator.checkPermission();
+    if(permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.deniedForever ||
+          permission == LocationPermission.denied) {
+        throw Exception('Location services are disabled.');
+      }
+      try {
+        final possition = await Geolocator.getCurrentPosition(
+          locationSettings: LocationSettings(accuracy: LocationAccuracy.high),
+        ).timeout(Duration(seconds: 10));
+        setState(() {
+          _latitude = possition.latitude;
+          _longitude = possition.longitude;
+        });
+      } catch (e) {
+        debugPrint('Gagal nebdapatkan Lokasi: $e');
+        setState(() {
+          _latitude = null;
+          _longitude = null;
+        });
+
+        Future<void> _submitPost() async {
+          if (_base64Image == null || _descriptionController.text.isEmpty)
+            return;
+
+          setState(() => _isUploading = true);
+
+          final now = DateTime.now().toIso8601String();
+          final uid = FirebaseAuth.instance.currentUser?.uid;
+
+          if (uid == null) {
+            setState(() => _isUploading = false);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Pengguna tidak ditemukan')),
+            );
+            return;
+          }
+          try {
+            await _getlocation();
+
+            //ambil nama lengkap dari koleksi user
+            final userDoc = await FirebaseFirestore.instance.collection('user')
+                .doc(uid)
+                .get();
+            final fullName = userDoc.data()?['fullName'] ?? 'Tanpa Nama';
+            await FirebaseFirestore.instance.collection('post').add({
+              'image': _base64Image,
+              'description': _descriptionController.text,
+              'createdAt': now,
+              'latitude': _latitude,
+              'longitude': _longitude,
+              'fullName': fullName, //<-----Tambhakan ini
+              'userId': uid,
+            });
+            if (!mounted) return;
+            Navigator.pop(context);
+          } catch (e) {
+            debugPrint('Upload failed: $e');
+            if (!mounted) return;
+            setState(() => _isUploading = false);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Gagal menggungah Postingan')),
+            );
+          }
+        }
+      }
+    }
   }
   Future<void> _compressAndEncodeImage() async {
     if (_image == null) return;
