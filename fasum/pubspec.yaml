@@ -43,6 +43,7 @@ dependencies:
   notification_permissions: ^0.6.1
   geolocator: ^14.0.0
   flutter_image_compress: ^1.1.0
+  url_launcher: ^6.3.1
   google_generative_ai: ^0.2.1
   shimmer: ^3.0.0
 
